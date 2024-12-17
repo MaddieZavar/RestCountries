@@ -1,84 +1,66 @@
 package com.mahdieh.zavar.restcountries;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mahdieh.zavar.restcountries.controller.CountryController;
+import com.mahdieh.zavar.restcountries.client.RestCountriesClient;
 import com.mahdieh.zavar.restcountries.data.CountryResponse;
-import com.mahdieh.zavar.restcountries.data.SortParameter;
-import com.mahdieh.zavar.restcountries.service.CountryService;
-import com.mahdieh.zavar.restcountries.service.CurrencyService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { RestCountriesApplication.class, TestConfig.class })
+@WebAppConfiguration
+@ActiveProfiles("integration-test")
 public class CountryControllerTest {
 
     private MockMvc mockMvc;
 
-    @Mock
-    private CountryService countryService;
+    @Autowired
+    private WebApplicationContext webApplicationContext;
 
-    @Mock
-    private CurrencyService currencyService;
-
-    @InjectMocks
-    private CountryController countryController;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private RestCountriesClient restCountriesClient;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-//        mockMvc = MockMvcBuilders.standaloneSetup(countryController).build();
-        mockMvc = MockMvcBuilders.standaloneSetup(countryController)
-                .setMessageConverters(new MappingJackson2HttpMessageConverter())
-                .build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
 
     @Test
     void testGetEuropeanCountriesSortedByName() throws Exception {
-        List<CountryResponse> mockResponse = List.of(
-                createCountryResponse("Austria", "Euro"),
+
+        when(restCountriesClient.getEuropeanCountries("europe"))
+                .thenReturn(List.of(
+                createCountryResponse("Germany", "Euro"),
                 createCountryResponse("France", "Euro"),
-                createCountryResponse("Germany", "Euro")
-        );
-
-        System.out.println(objectMapper.writeValueAsString(mockResponse));
-
-        when(countryService.getEuropeanCountriesSorted("europe", SortParameter.NAME, true))
-                .thenReturn(mockResponse);
+                createCountryResponse("Italy", "Euro")));
 
          //Perform the request
-        String responseContent = mockMvc.perform(get("/api/countries/europe")
+       mockMvc.perform(get("/api/countries/europe")
                         .param("sortBy", "NAME")
                         .param("ascending", "true")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .andExpect(jsonPath("$[0].name.common").value("France"))
+                .andExpect(jsonPath("$[1].name.common").value("Germany"))
+                .andExpect(jsonPath("$[2].name.common").value("Italy"));
 
-        verify(countryService).getEuropeanCountriesSorted("europe", SortParameter.NAME, true);
-
-        System.out.println("Actual Response: " + responseContent);
     }
 
     private CountryResponse createCountryResponse(String countryName, String currencyName) {

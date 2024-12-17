@@ -42,7 +42,8 @@ public class CountryService {
     }
 
     private List<CountryResponse> sortCountries(List<CountryResponse> countries, Comparator<CountryResponse> comparator) {
-        countries.sort(comparator);
-        return countries;
+        return countries.stream()
+                .sorted(comparator)
+                .toList();
     }
 }
