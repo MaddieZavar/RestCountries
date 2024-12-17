@@ -8,6 +8,8 @@ This project is a Spring Boot application that interacts with the [REST Countrie
     - Name
     - Currency
 - Supports sorting by name or currency in ascending or descending order.
+- Fetch list of all currencies in the world, with information in which countries each currency
+  is used.
 - Uses `@FeignClient` for third-party API integration.
 
 ## Requirements
@@ -41,25 +43,9 @@ localhost:8080/countries/{region}
 
 Example:
 ```text
-http://localhost:8080/countries/europe?sortBy=currency&order=desc
-```
+http://localhost:8080/api/countries/europe?sortBy=currency&order=desc
+http://localhost:8080/api/currencies
 
-## Project Structure
-```
-RestCountries/
-├── src/main/java
-│   ├── com/mahdieh/zavar/restcountries/controller
-│   │   └── CountryController.java
-│   ├── com/mahdieh/zavar/restcountries/service
-│   │   └── CountryService.java
-│   ├── com/mahdieh/zavar/restcountries/feign
-│   │   └── RestCountriesClient.java
-│   ├── com/mahdieh/zavar/restcountries/dto
-│   │   └── CountryResponse.java
-├── mvnw
-├── mvnw.cmd
-├── pom.xml
-└── README.md
 ```
 
 ### Key Components

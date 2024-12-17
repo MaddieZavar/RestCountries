@@ -12,4 +12,7 @@ public interface RestCountriesClient {
 
     @GetMapping("/region/{region}?fields=name,currencies,region")
     List<CountryResponse> getEuropeanCountries(@PathVariable("region") String region);
+
+    @GetMapping("/all?fields=name,currencies")
+    List<CountryResponse> getAllCountries();
 }
