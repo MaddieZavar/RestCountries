@@ -43,9 +43,9 @@ public class CountryControllerTest {
     }
 
     @Test
-    void testGetEuropeanCountriesSortedByName() throws Exception {
+    void testGetCountriesByRegionSortedByName() throws Exception {
 
-        when(restCountriesClient.getEuropeanCountries("europe"))
+        when(restCountriesClient.getCountriesByRegion("europe"))
                 .thenReturn(List.of(
                 createCountryResponse("Germany", "Euro"),
                 createCountryResponse("France", "Euro"),

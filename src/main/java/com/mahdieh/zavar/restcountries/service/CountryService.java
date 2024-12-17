@@ -16,8 +16,8 @@ public class CountryService {
 
     private final RestCountriesClient restCountriesClient;
 
-    public List<CountryResponse> getEuropeanCountriesSorted(String region, SortParameter sortBy, boolean ascending) {
-        List<CountryResponse> countries = restCountriesClient.getEuropeanCountries(region);
+    public List<CountryResponse> getCountriesByRegionSorted(String region, SortParameter sortBy, boolean ascending) {
+        List<CountryResponse> countries = restCountriesClient.getCountriesByRegion(region);
         Comparator<CountryResponse> comparator = getComparatorForSorting(sortBy);
         if (!ascending) {
             comparator = comparator.reversed();

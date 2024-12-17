@@ -23,7 +23,7 @@ public class CountryController {
     public ResponseEntity<?> getCountriesByRegion(@PathVariable String region,
                                                   @RequestParam(required = false, defaultValue = "NAME") SortParameter sortBy,
                                                   @RequestParam(required = false, defaultValue = "true") boolean ascending) {
-        List<CountryResponse> europeanCountriesSorted = countryService.getEuropeanCountriesSorted(region, sortBy, ascending);
+        List<CountryResponse> europeanCountriesSorted = countryService.getCountriesByRegionSorted(region, sortBy, ascending);
         return ResponseEntity.ok().body(europeanCountriesSorted);
     }
 
